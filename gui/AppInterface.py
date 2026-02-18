@@ -47,7 +47,7 @@ class AppInterface(ctk.CTk):
         }
 
         ctk.CTkButton(self.activity_bar, text="🏠", command=lambda: self.navigate("home"), **btn_style).pack(
-            pady=(20, 15), padx=10)
+            pady=(30, 15), padx=10)
 
         ctk.CTkButton(self.activity_bar, text="📅", command=lambda: self.navigate("calendar"), **btn_style).pack(pady=15,
                                                                                                                 padx=10)
