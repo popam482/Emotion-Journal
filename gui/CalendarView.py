@@ -4,10 +4,11 @@ import calendar
 
 
 class CalendarView(ctk.CTkFrame):
-    def __init__(self, parent, db, on_navigate):
-        super().__init__(parent, fg_color="#242424")
+    def __init__(self, parent, db, on_navigate, theme):
+        super().__init__(parent, fg_color=theme["bg_main"])
         self.db = db
         self.on_navigate = on_navigate
+        self.theme = theme
 
         now = datetime.now()
         self.current_year = now.year
@@ -33,7 +34,7 @@ class CalendarView(ctk.CTkFrame):
         header.pack(fill="x", padx=30, pady=(30, 10))
 
         ctk.CTkButton(header, text="◀", command=self.prev_month,
-                      fg_color="#333333", hover_color="#444444",
+                      fg_color=self.theme["border"], hover_color="#444444",
                       width=40, height=40, font=("Arial", 18)).pack(side="left")
 
         month_name = calendar.month_name[self.current_month]
@@ -43,10 +44,10 @@ class CalendarView(ctk.CTkFrame):
         self.month_label.pack(side="left", expand=True)
 
         ctk.CTkButton(header, text="▶", command=self.next_month,
-                      fg_color="#333333", hover_color="#444444",
+                      fg_color=self.theme["border"], hover_color="#444444",
                       width=40, height=40, font=("Arial", 18)).pack(side="right")
 
-        legend_frame = ctk.CTkFrame(self, fg_color="#2b2b2b", corner_radius=10)
+        legend_frame = ctk.CTkFrame(self, fg_color=self.theme["bg_card"], corner_radius=10)
         legend_frame.pack(fill="x", padx=30, pady=10)
 
         for emotion, emoji in self.emotion_emojis.items():
@@ -65,7 +66,7 @@ class CalendarView(ctk.CTkFrame):
         day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
         for i, name in enumerate(day_names):
             ctk.CTkLabel(days_header, text=name, font=("Arial", 13, "bold"),
-                         text_color="#888888").grid(row=0, column=i)
+                         text_color=self.theme["text_dim"]).grid(row=0, column=i)
 
 
         self.calendar_grid = ctk.CTkFrame(self, fg_color="transparent")
@@ -105,13 +106,13 @@ class CalendarView(ctk.CTkFrame):
                     display_text = f"{emoji}\n{day}"
                     text_color = "white"
                 elif is_today:
-                    bg_color = "#6c82f0"
+                    bg_color = self.theme["accent"]
                     display_text = f"📍\n{day}"
                     text_color = "white"
                 else:
-                    bg_color = "#2b2b2b"
+                    bg_color = self.theme["bg_card"]
                     display_text = str(day)
-                    text_color = "#888888"
+                    text_color = self.theme["text_dim"]
 
                 cell = ctk.CTkFrame(self.calendar_grid, fg_color=bg_color,
                                     corner_radius=10, height=65)

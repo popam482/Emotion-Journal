@@ -2,10 +2,11 @@ import customtkinter as ctk
 
 
 class AlertsView(ctk.CTkFrame):
-    def __init__(self, parent, db, on_navigate):
-        super().__init__(parent, fg_color="#242424")
+    def __init__(self, parent, db, on_navigate, theme):
+        super().__init__(parent, fg_color=theme["bg_main"])
         self.db = db
         self.on_navigate = on_navigate
+        self.theme = theme
 
         self.emotion_emojis = {
             "happy": "😊", "sad": "😢", "angry": "😠",
@@ -30,7 +31,7 @@ class AlertsView(ctk.CTkFrame):
                          font=("Arial", 18), text_color="#4CAF50").pack(pady=40)
             ctk.CTkLabel(alerts_container,
                          text="Keep doing check-ins to receive personalized insights.",
-                         font=("Arial", 14), text_color="#aaaaaa").pack()
+                         font=("Arial", 14), text_color=self.theme["text_dim"]).pack()
         else:
             for alert in alerts:
                 self.create_alert_card(alerts_container, alert)
@@ -90,7 +91,7 @@ class AlertsView(ctk.CTkFrame):
         return alerts
 
     def create_alert_card(self, parent, alert):
-        card = ctk.CTkFrame(parent, fg_color="#2b2b2b", corner_radius=12,
+        card = ctk.CTkFrame(parent, fg_color=self.theme["bg_card"], corner_radius=12,
                             border_width=1, border_color=alert["color"])
         card.pack(fill="x", pady=8, padx=5)
 
@@ -108,5 +109,5 @@ class AlertsView(ctk.CTkFrame):
                      text_color=alert["color"]).pack(side="left")
 
         ctk.CTkLabel(content, text=alert["message"],
-                     font=("Arial", 13), text_color="#aaaaaa",
+                     font=("Arial", 13), text_color=self.theme["text_dim"],
                      wraplength=500, justify="left").pack(anchor="w", pady=(5, 0))
