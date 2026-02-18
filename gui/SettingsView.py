@@ -1,0 +1,138 @@
+import customtkinter as ctk
+
+
+class SettingsView(ctk.CTkFrame):
+    def __init__(self, parent, db, on_navigate, scan_duration):
+        super().__init__(parent, fg_color="#242424")
+        self.db=db
+        self.on_navigate = on_navigate
+        self.scan_duration=scan_duration
+        self.build_ui()
+
+    def build_ui(self):
+        ctk.CTkLabel(self, text="⚙ Settings",
+                     font=("Arial", 28, "bold")).pack(pady=(30, 20))
+
+        settings_container = ctk.CTkScrollableFrame(self, fg_color="transparent")
+        settings_container.pack(expand=True, fill="both", padx=30, pady=(0, 20))
+
+        self.create_section(settings_container, "Scan Configuration")
+
+        scan_frame = ctk.CTkFrame(settings_container, fg_color="#2b2b2b", corner_radius=12)
+        scan_frame.pack(fill="x", pady=(0, 15), padx=5)
+
+        dur_row = ctk.CTkFrame(scan_frame, fg_color="transparent")
+        dur_row.pack(fill="x", padx=20, pady=15)
+
+        ctk.CTkLabel(dur_row, text="Scan Duration (seconds)",
+                     font=("Arial", 14)).pack(side="left")
+
+        self.duration_var = ctk.IntVar(value=self.scan_duration["scan_duration"])
+        self.duration_slider = ctk.CTkSlider(dur_row, from_=5, to=30,
+                                              number_of_steps=25,
+                                              variable=self.duration_var,
+                                              progress_color="#6c82f0")
+        self.duration_slider.pack(side="right", padx=(20, 10))
+
+        self.duration_display = ctk.CTkLabel(dur_row, text="10s",
+                                              font=("Arial", 14, "bold"),
+                                              text_color="#6c82f0")
+        self.duration_display.pack(side="right")
+
+        self.duration_slider.configure(
+            command = self.on_duration_change
+        )
+
+        self.create_section(settings_container, "Appearance")
+
+        appearance_frame = ctk.CTkFrame(settings_container, fg_color="#2b2b2b", corner_radius=12)
+        appearance_frame.pack(fill="x", pady=(0, 15), padx=5)
+
+        theme_row = ctk.CTkFrame(appearance_frame, fg_color="transparent")
+        theme_row.pack(fill="x", padx=20, pady=15)
+
+        ctk.CTkLabel(theme_row, text="Theme",
+                     font=("Arial", 14)).pack(side="left")
+
+        self.theme_menu = ctk.CTkOptionMenu(theme_row,
+                                             values=["Dark", "Light", "System"],
+                                             command=self.change_theme,
+                                             fg_color="#333333",
+                                             button_color="#6c82f0")
+        self.theme_menu.pack(side="right")
+
+        self.create_section(settings_container, "Data Management")
+
+        data_frame = ctk.CTkFrame(settings_container, fg_color="#2b2b2b", corner_radius=12)
+        data_frame.pack(fill="x", pady=(0, 15), padx=5)
+
+        export_row = ctk.CTkFrame(data_frame, fg_color="transparent")
+        export_row.pack(fill="x", padx=20, pady=15)
+
+        ctk.CTkLabel(export_row, text="Export your data as CSV",
+                     font=("Arial", 14)).pack(side="left")
+
+        ctk.CTkButton(export_row, text="📁  Export", command=self.export_data,
+                      fg_color="#6c82f0", hover_color="#5a6ed0",
+                      width=120, height=35).pack(side="right")
+
+        clear_row = ctk.CTkFrame(data_frame, fg_color="transparent")
+        clear_row.pack(fill="x", padx=20, pady=(0, 15))
+
+        ctk.CTkLabel(clear_row, text="Delete all stored data",
+                     font=("Arial", 14)).pack(side="left")
+
+        ctk.CTkButton(clear_row, text="🗑  Clear All", command=self.confirm_clear,
+                      fg_color="#F44336", hover_color="#D32F2F",
+                      width=120, height=35).pack(side="right")
+
+        self.create_section(settings_container, "About")
+
+        about_frame = ctk.CTkFrame(settings_container, fg_color="#2b2b2b", corner_radius=12)
+        about_frame.pack(fill="x", pady=(0, 15), padx=5)
+
+        ctk.CTkLabel(about_frame, text="Emotion Journal v1.0",
+                     font=("Arial", 14, "bold")).pack(pady=(15, 5))
+        ctk.CTkLabel(about_frame, text="Built with Python, CustomTkinter, DeepFace & OpenCV",
+                     font=("Arial", 12), text_color="#aaaaaa").pack(pady=(0, 15))
+
+    def create_section(self, parent, title):
+        ctk.CTkLabel(parent, text=title, font=("Arial", 18, "bold"),
+                     text_color="#6c82f0").pack(anchor="w", padx=5, pady=(15, 8))
+
+    def change_theme(self, value):
+        ctk.set_appearance_mode(value.lower())
+
+    def export_data(self):
+        print("Export data - to be implemented")
+
+    def confirm_clear(self):
+        dialog = ctk.CTkToplevel(self)
+        dialog.title("Confirm Delete")
+        dialog.geometry("350x180")
+        dialog.resizable(False, False)
+        dialog.grab_set()
+
+        ctk.CTkLabel(dialog, text="⚠️  Are you sure?",
+                     font=("Arial", 18, "bold")).pack(pady=(20, 10))
+        ctk.CTkLabel(dialog, text="This will permanently delete all your data.",
+                     font=("Arial", 13), text_color="#aaaaaa").pack(pady=5)
+
+        btn_frame = ctk.CTkFrame(dialog, fg_color="transparent")
+        btn_frame.pack(pady=15)
+
+        ctk.CTkButton(btn_frame, text="Cancel", command=dialog.destroy,
+                      fg_color="#333333", width=100).pack(side="left", padx=10)
+        ctk.CTkButton(btn_frame, text="Delete", command=lambda: self.clear_data(dialog),
+                      fg_color="#F44336", hover_color="#D32F2F",
+                      width=100).pack(side="left", padx=10)
+
+
+    def on_duration_change(self, value):
+        seconds=int(float(value))
+        self.duration_display.configure(text=f"{seconds}s")
+        self.scan_duration["scan_duration"] = seconds
+    def clear_data(self, dialog):
+        self.db.clear_all()
+        dialog.destroy()
+        print("Data cleared - to be implemented")
