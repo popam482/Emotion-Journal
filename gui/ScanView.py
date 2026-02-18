@@ -6,12 +6,13 @@ import time
 
 
 class ScanView(ctk.CTkFrame):
-    def __init__(self, parent, analyzer, db, on_navigate, scan_dur):
-        super().__init__(parent, fg_color="#242424")
+    def __init__(self, parent, analyzer, db, on_navigate, scan_dur, theme):
+        super().__init__(parent, fg_color=theme["bg_main"])
         self.analyzer = analyzer
         self.db = db
         self.on_navigate = on_navigate
         self.scan_dur = scan_dur
+        self.theme = theme
 
         self.is_scanning = False
         self.scan_start_time = 0
@@ -33,16 +34,16 @@ class ScanView(ctk.CTkFrame):
         ctk.CTkLabel(self, text="Emotion Check-in",
                      font=("Arial", 28, "bold")).pack(pady=(0, 10))
         ctk.CTkLabel(self, text=f"The app will scan your expression for {duration} seconds.\nStay still and look at the camera.",
-                     font=("Arial", 14), text_color="#aaaaaa",
+                     font=("Arial", 14), text_color=self.theme["text_dim"],
                      justify="center").pack(pady=(0, 30))
 
         ctk.CTkButton(self, text="▶ Start Scan", command=self.start_scan,
-                      fg_color="#6c82f0", hover_color="#5a6ed0",
+                      fg_color=self.theme["accent"], hover_color="#5a6ed0",
                       width=200, height=45, corner_radius=12,
                       font=("Arial", 16, "bold")).pack(pady=10)
 
         ctk.CTkButton(self, text="← Back", command=lambda: self.on_navigate("home"),
-                      fg_color="transparent", hover_color="#333333",
+                      fg_color="transparent", hover_color=self.theme["border"],
                       width=120, height=35, font=("Arial", 13)).pack(pady=(5, 20))
 
     def start_scan(self):
@@ -59,7 +60,7 @@ class ScanView(ctk.CTkFrame):
         self.video_label.pack(expand=True)
 
         self.progress_bar = ctk.CTkProgressBar(self, width=400,
-                                                progress_color="#6c82f0")
+                                                progress_color=self.theme["accent"])
         self.progress_bar.pack(pady=(10, 20))
         self.progress_bar.set(0)
 
@@ -112,10 +113,10 @@ class ScanView(ctk.CTkFrame):
             ctk.CTkLabel(self, text=emoji, font=("Arial", 72)).pack(pady=(50, 10))
             ctk.CTkLabel(self, text=f"You seem {dominant.capitalize()}!",
                          font=("Arial", 28, "bold"),
-                         text_color="#6c82f0").pack(pady=10)
+                         text_color=self.theme["accent"]).pack(pady=10)
 
 
-            breakdown_frame = ctk.CTkFrame(self, fg_color="#2b2b2b", corner_radius=12)
+            breakdown_frame = ctk.CTkFrame(self, fg_color=self.theme["bg_card"], corner_radius=12)
             breakdown_frame.pack(pady=20, padx=60, fill="x")
 
             ctk.CTkLabel(breakdown_frame, text="Scan Breakdown",
@@ -127,7 +128,7 @@ class ScanView(ctk.CTkFrame):
                 em = self.emotion_emojis.get(emotion, "")
                 ctk.CTkLabel(breakdown_frame,
                              text=f"{em} {emotion.capitalize()}: {percentage}% ({count}/{total})",
-                             font=("Arial", 13), text_color="#aaaaaa"
+                             font=("Arial", 13), text_color=self.theme["text_dim"]
                              ).pack(pady=2)
 
             ctk.CTkLabel(breakdown_frame, text="").pack(pady=5)  # Spacing
@@ -137,18 +138,18 @@ class ScanView(ctk.CTkFrame):
             ctk.CTkLabel(self, text="No emotion detected",
                          font=("Arial", 24, "bold"), text_color="red").pack(pady=10)
             ctk.CTkLabel(self, text="Make sure your face is visible and well-lit.",
-                         font=("Arial", 14), text_color="#aaaaaa").pack(pady=5)
+                         font=("Arial", 14), text_color=self.theme["text_dim"]).pack(pady=5)
 
 
         buttons_frame = ctk.CTkFrame(self, fg_color="transparent")
         buttons_frame.pack(pady=20)
 
         ctk.CTkButton(buttons_frame, text="🔄  Scan Again", command=self.build_start_screen,
-                      fg_color="#6c82f0", hover_color="#5a6ed0",
+                      fg_color=self.theme["accent"], hover_color="#5a6ed0",
                       width=160, height=40, font=("Arial", 14, "bold")).pack(side="left", padx=10)
 
         ctk.CTkButton(buttons_frame, text="🏠  Home", command=lambda: self.on_navigate("home"),
-                      fg_color="#333333", hover_color="#444444",
+                      fg_color=self.theme["border"], hover_color="#444444",
                       width=160, height=40, font=("Arial", 14, "bold")).pack(side="left", padx=10)
 
     def clear(self):
