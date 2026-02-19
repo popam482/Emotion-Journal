@@ -5,6 +5,7 @@ from gui.HomeView import HomeView
 from gui.ScanView import ScanView
 from gui.CalendarView import CalendarView
 from gui.AlertsView import AlertsView
+from gui.SettingsManager import SettingsManager
 from gui.SettingsView import SettingsView
 
 
@@ -14,7 +15,10 @@ class AppInterface(ctk.CTk):
 
         self.analyzer = EmotionAnalyzer()
         self.db = DatabaseManager()
-        self.scan_duration = {"scan_duration": 10}
+        self.settings_manager = SettingsManager()
+        self.scan_duration = {"scan_duration": self.settings_manager.get("scan_duration")}
+
+        saved_theme = self.settings_manager.get("theme_mode")
 
         self.theme = {
             "sidebar": ("#d1d1d1", "#1a1a1a"),
@@ -28,7 +32,7 @@ class AppInterface(ctk.CTk):
 
         self.title("Emotion Journal")
         self.geometry("1280x720")
-        ctk.set_appearance_mode("dark")
+        ctk.set_appearance_mode(saved_theme)
 
         self.grid_columnconfigure(1, weight=1)
         self.grid_rowconfigure(0, weight=1)
