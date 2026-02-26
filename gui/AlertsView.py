@@ -1,7 +1,10 @@
 import customtkinter as ctk
-
+import random
+import json
+import os
 
 class AlertsView(ctk.CTkFrame):
+
     def __init__(self, parent, db, on_navigate, theme):
         super().__init__(parent, fg_color=theme["bg_main"])
         self.db = db
@@ -13,6 +16,10 @@ class AlertsView(ctk.CTkFrame):
             "surprise": "😲", "fear": "😨", "disgust": "🤢",
             "neutral": "😐"
         }
+
+        tips_path = os.path.join("data", "emotion_tips.json")
+        with open(tips_path, "r", encoding="utf-8") as f:
+            self.emotion_tips = json.load(f)
 
         self.build_ui()
 
@@ -41,6 +48,22 @@ class AlertsView(ctk.CTkFrame):
         stats = self.db.get_stats()
         streak = self.db.get_streak()
         weekly = self.db.get_weekly_summary()
+
+        last_emotion = stats.get("last_emotion", "").lower()
+        if last_emotion in self.emotion_tips:
+            tip = random.choice(self.emotion_tips[last_emotion])
+            tip_color = {
+                "happy": "#4CAF50", "sad": "#2196F3", "angry": "#F44336",
+                "surprise": "#FF9800", "fear": "#9C27B0",
+                "disgust": "#795548", "neutral": "#607D8B"
+            }.get(last_emotion, "#6c82f0")
+            alerts.append({
+                "type": "tip",
+                "icon": tip["icon"],
+                "title": tip["title"],
+                "message": tip["message"],
+                "color": tip_color
+            })
 
         if streak["count"] >= 3:
             emoji = self.emotion_emojis.get(streak["emotion"], "🤔")

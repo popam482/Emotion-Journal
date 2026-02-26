@@ -50,7 +50,7 @@ class ScanView(ctk.CTkFrame):
         self.clear()
         self.analyzer.start_camera()
 
-        self.scan_dur = self.scan_dur["scan_duration"]
+        self.active_duration = self.scan_dur["scan_duration"]
 
         self.status_label = ctk.CTkLabel(self, text="Scanning...",
                                          font=("Arial", 24, "bold"))
@@ -76,8 +76,8 @@ class ScanView(ctk.CTkFrame):
         ret, frame = self.analyzer.get_frame()
         if ret:
             elapsed = time.time() - self.scan_start_time
-            remaining = max(0, int(self.scan_dur - elapsed))
-            progress = min(elapsed / self.scan_dur, 1.0)
+            remaining = max(0, int(self.active_duration - elapsed))
+            progress = min(elapsed / self.active_duration, 1.0)
 
             self.progress_bar.set(progress)
             self.status_label.configure(text=f"Scanning... {remaining}s left")
@@ -92,7 +92,7 @@ class ScanView(ctk.CTkFrame):
             self.video_label.configure(image=ctk_img)
             self.video_label._image = ctk_img
 
-            if elapsed >= self.scan_dur:
+            if elapsed >= self.active_duration:
                 self.finish_scan()
                 return
 

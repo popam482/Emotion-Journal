@@ -1,0 +1,71 @@
+{
+    "happy": [
+        {"icon": "😊", "title": "You're glowing today!", "message": "Happiness is contagious — share a kind word with someone around you!"},
+        {"icon": "😄", "title": "Ride the wave!", "message": "Use this momentum to do one thing that helps future-you."},
+        {"icon": "🎉", "title": "Great energy!", "message": "Celebrate by doing something that you like."},
+        {"icon": "🌟", "title": "Good vibes", "message": "Take a moment to notice what made today feel good."},
+        {"icon": "💛", "title": "Savor the moment", "message": "Pause for a few seconds and really enjoy this feeling."},
+        {"icon": "🚀", "title": "Momentum boost", "message": "This is a great time to start something new."},
+        {"icon": "📸", "title": "Capture it", "message": "Write down what made you happy today so you can remember it later."}
+    ],
+
+    "sad": [
+        {"icon": "🎵", "title": "A song for you", "message": "Sometimes music helps, try listening to 'Here Comes the Sun' by The Beatles."},
+        {"icon": "🛁", "title": "Take care of yourself", "message": "A warm drink, a blanket, and your favourite show can do wonders right now."},
+        {"icon": "💙", "title": "It's okay to feel sad", "message": "Try writing down what's on your mind or reach out to someone."},
+        {"icon": "🎶", "title": "Music heals", "message": "How about 'Don't worry, be happy'?"},
+        {"icon": "🕯️", "title": "One step at a time", "message": "You don’t need to fix everything today."},
+        {"icon": "📖", "title": "Gentle distraction", "message": "A familiar book or comfort video can help your mind rest."},
+        {"icon": "🤍", "title": "Be kind to yourself", "message": "Feeling sad doesn’t mean you’re weak — it means you care."}
+    ],
+
+    "angry": [
+        {"icon": "🧘", "title": "Take a breath", "message": "Try the 4-7-8 technique: inhale 4s, hold 7s, exhale 8s. Repeat 3 times."},
+        {"icon": "🚶", "title": "Move it out", "message": "A short 10-minute walk can significantly reduce anger and cortisol levels."},
+        {"icon": "✍️", "title": "Let it out on paper", "message": "Write down what's frustrating you — no filter, just get it out."},
+        {"icon": "🔥", "title": "Strong emotion", "message": "Anger often points to a boundary that was crossed."},
+        {"icon": "🥊", "title": "Release the tension", "message": "Physical movement helps burn off excess energy."},
+        {"icon": "⏸️", "title": "Pause first", "message": "Give yourself a moment before reacting."},
+        {"icon": "🌬️", "title": "Cool down", "message": "Slow breathing can calm your nervous system."}
+    ],
+
+    "fear": [
+        {"icon": "🕯️", "title": "You're safe", "message": "Ground yourself: name 5 things you can see, 4 you can touch, 3 you can hear."},
+        {"icon": "💪", "title": "Courage isn't the absence of fear", "message": "Take one small step forward — you don't have to tackle it all at once."},
+        {"icon": "🫂", "title": "Connection helps", "message": "If possible, talk to someone you trust — even briefly."},
+        {"icon": "🌿", "title": "Breathe slowly", "message": "Slow breaths tell your body it’s not in danger."},
+        {"icon": "🧭", "title": "Find direction", "message": "Break the situation into small, manageable parts."},
+        {"icon": "🔍", "title": "Check the facts", "message": "Fear grows when things are unclear — clarify one detail."},
+        {"icon": "🛡️", "title": "You’ve handled this before", "message": "Remember a time you were scared and still got through it."}
+    ],
+
+    "disgust": [
+        {"icon": "🌱", "title": "Reset your space", "message": "Sometimes tidying up a small corner of your room can shift your mood."},
+        {"icon": "🍃", "title": "Fresh air helps", "message": "Step outside for a few minutes — a change of scenery can reset your senses."},
+        {"icon": "🎨", "title": "Channel it creatively", "message": "Strong feelings can be great fuel for drawing, writing, or making something."},
+        {"icon": "🚿", "title": "Clean slate", "message": "Washing your hands or face can feel grounding."},
+        {"icon": "🧹", "title": "Clear it away", "message": "Removing what bothers you can restore a sense of control."},
+        {"icon": "🫧", "title": "Lighten the feeling", "message": "Discomfort passes faster when you shift focus."},
+        {"icon": "🌬️", "title": "Deep breath", "message": "Slow breathing can help settle your reaction."}
+    ],
+
+    "surprise": [
+        {"icon": "🌀", "title": "Unexpected day?", "message": "Surprises keep life interesting, take a moment to process before reacting."},
+        {"icon": "📓", "title": "Write it down", "message": "Something caught you off guard today, journaling it can help you make sense of it."},
+        {"icon": "😲", "title": "Roll with it!", "message": "Adaptability is a superpower. You've handled surprises before and you'll handle this too."},
+        {"icon": "⏳", "title": "Give it time", "message": "You don’t need an immediate reaction."},
+        {"icon": "🔄", "title": "Shift perspective", "message": "Not all surprises are bad — just unfamiliar."},
+        {"icon": "🧠", "title": "Process first", "message": "Let your thoughts settle before deciding anything."},
+        {"icon": "🌊", "title": "Go with the flow", "message": "You can adapt — you’ve done it before."}
+    ],
+
+    "neutral": [
+        {"icon": "☕", "title": "Feeling balanced?", "message": "A calm mood is a great state for focused work or learning something new."},
+        {"icon": "🧠", "title": "Clear mind", "message": "This is a great state for problem-solving or learning something new."},
+        {"icon": "🌤️", "title": "A quiet day is still a good day", "message": "Not every day needs to be intense. Rest and routine have real value."},
+        {"icon": "🎯", "title": "Small goal", "message": "Pick one simple task and complete it."},
+        {"icon": "📅", "title": "Light planning", "message": "A bit of structure can bring clarity."},
+        {"icon": "🪴", "title": "Steady state", "message": "Not feeling much is still a valid state."},
+        {"icon": "🔋", "title": "Stable energy", "message": "Use this balance to recharge or prepare."}
+    ]
+}

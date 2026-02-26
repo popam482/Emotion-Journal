@@ -55,7 +55,7 @@ class CalendarView(ctk.CTkFrame):
             item = ctk.CTkFrame(legend_frame, fg_color="transparent")
             item.pack(side="left", padx=8, pady=8)
             ctk.CTkLabel(item, text=f"{emoji} {emotion.capitalize()}",
-                         font=("Arial", 11), text_color=color).pack()
+                         font=("Arial", 14), text_color=color).pack()
 
 
         days_header = ctk.CTkFrame(self, fg_color="transparent")
@@ -65,7 +65,7 @@ class CalendarView(ctk.CTkFrame):
 
         day_names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
         for i, name in enumerate(day_names):
-            ctk.CTkLabel(days_header, text=name, font=("Arial", 13, "bold"),
+            ctk.CTkLabel(days_header, text=name, font=("Arial", 17, "bold"),
                          text_color=self.theme["text_dim"]).grid(row=0, column=i)
 
 
@@ -89,7 +89,6 @@ class CalendarView(ctk.CTkFrame):
             self.calendar_grid.grid_rowconfigure(row_idx, weight=1)
             for col_idx, day in enumerate(week):
                 if day == 0:
-                    # Zi goală (din luna anterioară/următoare)
                     ctk.CTkLabel(self.calendar_grid, text="").grid(
                         row=row_idx, column=col_idx, padx=3, pady=3)
                     continue
@@ -119,7 +118,7 @@ class CalendarView(ctk.CTkFrame):
                 cell.grid(row=row_idx, column=col_idx, padx=3, pady=3, sticky="nsew")
                 cell.grid_propagate(False)
 
-                ctk.CTkLabel(cell, text=display_text, font=("Arial", 13, "bold"),
+                ctk.CTkLabel(cell, text=display_text, font=("Arial", 17, "bold"),
                              text_color=text_color).place(relx=0.5, rely=0.5, anchor="center")
 
     def prev_month(self):
