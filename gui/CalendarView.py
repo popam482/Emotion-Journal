@@ -1,6 +1,6 @@
-import customtkinter as ctk
 from datetime import datetime, timedelta
 import calendar
+import customtkinter as ctk
 
 
 class CalendarView(ctk.CTkFrame):
@@ -57,7 +57,6 @@ class CalendarView(ctk.CTkFrame):
             ctk.CTkLabel(item, text=f"{emoji} {emotion.capitalize()}",
                          font=("Arial", 14), text_color=color).pack()
 
-
         days_header = ctk.CTkFrame(self, fg_color="transparent")
         days_header.pack(fill="x", padx=30, pady=(15, 5))
         for i in range(7):
@@ -67,7 +66,6 @@ class CalendarView(ctk.CTkFrame):
         for i, name in enumerate(day_names):
             ctk.CTkLabel(days_header, text=name, font=("Arial", 17, "bold"),
                          text_color=self.theme["text_dim"]).grid(row=0, column=i)
-
 
         self.calendar_grid = ctk.CTkFrame(self, fg_color="transparent")
         self.calendar_grid.pack(expand=True, fill="both", padx=30, pady=(5, 20))
@@ -118,8 +116,57 @@ class CalendarView(ctk.CTkFrame):
                 cell.grid(row=row_idx, column=col_idx, padx=3, pady=3, sticky="nsew")
                 cell.grid_propagate(False)
 
-                ctk.CTkLabel(cell, text=display_text, font=("Arial", 17, "bold"),
-                             text_color=text_color).place(relx=0.5, rely=0.5, anchor="center")
+                label = ctk.CTkLabel(cell, text=display_text, font=("Arial", 17, "bold"),
+                                     text_color=text_color, cursor="hand2")
+                label.place(relx=0.5, rely=0.5, anchor="center")
+
+                label.bind("<Button-1>", lambda e, d=date_str, em=emotion: self.show_day_detail(d, em))
+                cell.bind("<Button-1>", lambda e, d=date_str, em=emotion: self.show_day_detail(d, em))
+
+    def show_day_detail(self, date_str, emotion):
+        note = self.db.get_note_for_date(date_str)
+
+        popup = ctk.CTkToplevel(self)
+        popup.title(f"Journal — {date_str}")
+        popup.geometry("420x320")
+        popup.resizable(False, False)
+        popup.grab_set()
+        popup.configure(fg_color=self.theme["bg_main"])
+
+        # header
+        header_frame = ctk.CTkFrame(popup, fg_color=self.theme["bg_card"], corner_radius=12)
+        header_frame.pack(fill="x", padx=20, pady=(20, 10))
+
+        if emotion:
+            emoji = self.emotion_emojis.get(emotion, "")
+            color = self.emotion_colors.get(emotion, self.theme["accent"])
+            ctk.CTkLabel(header_frame, text=f"{emoji}  {emotion.capitalize()}",
+                         font=("Arial", 22, "bold"), text_color=color).pack(pady=15)
+        else:
+            ctk.CTkLabel(header_frame, text="No check-in recorded",
+                         font=("Arial", 16), text_color=self.theme["text_dim"]).pack(pady=15)
+
+        ctk.CTkLabel(header_frame, text=date_str,
+                     font=("Arial", 12), text_color=self.theme["text_dim"]).pack(pady=(0, 12))
+
+        note_frame = ctk.CTkFrame(popup, fg_color=self.theme["bg_card"], corner_radius=12)
+        note_frame.pack(fill="both", expand=True, padx=20, pady=(0, 10))
+
+        ctk.CTkLabel(note_frame, text="📝  Journal Note",
+                     font=("Arial", 14, "bold")).pack(anchor="w", padx=15, pady=(12, 4))
+
+        if note:
+            ctk.CTkLabel(note_frame, text=note,
+                         font=("Arial", 13), text_color=self.theme["text_dim"],
+                         wraplength=360, justify="left").pack(anchor="w", padx=15, pady=(0, 15))
+        else:
+            ctk.CTkLabel(note_frame, text="No note was left for this day.",
+                         font=("Arial", 13), text_color=self.theme["text_dim"],
+                         wraplength=360, justify="left").pack(anchor="w", padx=15, pady=(0, 15))
+
+        ctk.CTkButton(popup, text="Close", command=popup.destroy,
+                      fg_color=self.theme["border"], hover_color="#444444",
+                      width=120, height=35).pack(pady=(0, 20))
 
     def prev_month(self):
         if self.current_month == 1:

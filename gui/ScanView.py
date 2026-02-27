@@ -17,6 +17,7 @@ class ScanView(ctk.CTkFrame):
         self.is_scanning = False
         self.scan_start_time = 0
         self.captured_emotions = []
+        self.last_log_id = None  # ✅ track the saved row ID
         self.emotion_emojis = {
             "happy": "😊", "sad": "😢", "angry": "😠",
             "surprise": "😲", "fear": "😨", "disgust": "🤢",
@@ -27,7 +28,6 @@ class ScanView(ctk.CTkFrame):
 
     def build_start_screen(self):
         self.clear()
-
         duration = self.scan_dur["scan_duration"]
 
         ctk.CTkLabel(self, text="🔍", font=("Arial", 48)).pack(pady=(40, 10))
@@ -49,7 +49,6 @@ class ScanView(ctk.CTkFrame):
     def start_scan(self):
         self.clear()
         self.analyzer.start_camera()
-
         self.active_duration = self.scan_dur["scan_duration"]
 
         self.status_label = ctk.CTkLabel(self, text="Scanning...",
@@ -106,18 +105,17 @@ class ScanView(ctk.CTkFrame):
         if self.captured_emotions:
             counts = Counter(self.captured_emotions)
             dominant = counts.most_common(1)[0][0]
-            self.db.save_emotion(dominant)
+            self.last_log_id = self.db.save_emotion(dominant)
 
             emoji = self.emotion_emojis.get(dominant, "🤔")
 
-            ctk.CTkLabel(self, text=emoji, font=("Arial", 72)).pack(pady=(50, 10))
+            ctk.CTkLabel(self, text=emoji, font=("Arial", 72)).pack(pady=(30, 5))
             ctk.CTkLabel(self, text=f"You seem {dominant.capitalize()}!",
                          font=("Arial", 28, "bold"),
-                         text_color=self.theme["accent"]).pack(pady=10)
-
+                         text_color=self.theme["accent"]).pack(pady=(0, 10))
 
             breakdown_frame = ctk.CTkFrame(self, fg_color=self.theme["bg_card"], corner_radius=12)
-            breakdown_frame.pack(pady=20, padx=60, fill="x")
+            breakdown_frame.pack(pady=(0, 15), padx=60, fill="x")
 
             ctk.CTkLabel(breakdown_frame, text="Scan Breakdown",
                          font=("Arial", 16, "bold")).pack(pady=(15, 5))
@@ -130,27 +128,52 @@ class ScanView(ctk.CTkFrame):
                              text=f"{em} {emotion.capitalize()}: {percentage}% ({count}/{total})",
                              font=("Arial", 13), text_color=self.theme["text_dim"]
                              ).pack(pady=2)
+            ctk.CTkLabel(breakdown_frame, text="").pack(pady=5)
 
-            ctk.CTkLabel(breakdown_frame, text="").pack(pady=5)  # Spacing
+            note_frame = ctk.CTkFrame(self, fg_color=self.theme["bg_card"], corner_radius=12)
+            note_frame.pack(pady=(0, 15), padx=60, fill="x")
+
+            ctk.CTkLabel(note_frame, text="📝  How are you feeling? (optional)",
+                         font=("Arial", 14, "bold")).pack(anchor="w", padx=15, pady=(12, 4))
+            ctk.CTkLabel(note_frame, text="Write a few words about your day or what's on your mind.",
+                         font=("Arial", 12), text_color=self.theme["text_dim"]).pack(anchor="w", padx=15)
+
+            self.note_entry = ctk.CTkTextbox(note_frame, width=500, height=80,
+                                             corner_radius=8, fg_color=self.theme["bg_main"])
+            self.note_entry.pack(fill="x", padx=15, pady=(8, 15))
 
         else:
+            self.last_log_id = None
             ctk.CTkLabel(self, text="😕", font=("Arial", 72)).pack(pady=(50, 10))
             ctk.CTkLabel(self, text="No emotion detected",
                          font=("Arial", 24, "bold"), text_color="red").pack(pady=10)
             ctk.CTkLabel(self, text="Make sure your face is visible and well-lit.",
                          font=("Arial", 14), text_color=self.theme["text_dim"]).pack(pady=5)
 
-
+        # ✅ buttons now save the note before navigating
         buttons_frame = ctk.CTkFrame(self, fg_color="transparent")
-        buttons_frame.pack(pady=20)
+        buttons_frame.pack(pady=10)
 
-        ctk.CTkButton(buttons_frame, text="🔄  Scan Again", command=self.build_start_screen,
+        ctk.CTkButton(buttons_frame, text="🔄  Scan Again",
+                      command=lambda: self.save_note_and_go("scan"),
                       fg_color=self.theme["accent"], hover_color="#5a6ed0",
                       width=160, height=40, font=("Arial", 14, "bold")).pack(side="left", padx=10)
 
-        ctk.CTkButton(buttons_frame, text="🏠  Home", command=lambda: self.on_navigate("home"),
+        ctk.CTkButton(buttons_frame, text="🏠  Home",
+                      command=lambda: self.save_note_and_go("home"),
                       fg_color=self.theme["border"], hover_color="#444444",
                       width=160, height=40, font=("Arial", 14, "bold")).pack(side="left", padx=10)
+
+    def save_note_and_go(self, destination):
+        if self.last_log_id is not None and hasattr(self, "note_entry"):
+            note = self.note_entry.get("1.0", "end").strip()
+            if note:
+                self.db.save_note(self.last_log_id, note)
+
+        if destination == "scan":
+            self.build_start_screen()
+        else:
+            self.on_navigate("home")
 
     def clear(self):
         for widget in self.winfo_children():

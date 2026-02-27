@@ -18,31 +18,52 @@ class DatabaseManager:
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     timestamp DATETIME,
                     emotion TEXT,
-                    confidence REAL
+                    confidence REAL,
+                    notes TEXT DEFAULT ''
                 );
             """)
+            try:
+                conn.execute("ALTER TABLE emotion_logs ADD COLUMN notes TEXT DEFAULT ''")
+            except Exception:
+                pass
             conn.commit()
 
     def save_emotion(self, emotion, confidence=1.0):
         with self.get_connection() as conn:
             date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            conn.execute(
+            cursor = conn.execute(
                 "INSERT INTO emotion_logs (timestamp, emotion, confidence) VALUES (?, ?, ?)",
                 (date, emotion, confidence)
             )
             conn.commit()
+            return cursor.lastrowid
+
+    def save_note(self, log_id, note):
+        with self.get_connection() as conn:
+            conn.execute(
+                "UPDATE emotion_logs SET notes = ? WHERE id = ?",
+                (note, log_id)
+            )
+            conn.commit()
+
+    def get_note_for_date(self, date_str):
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT notes FROM emotion_logs WHERE DATE(timestamp) = ? AND notes != '' ORDER BY timestamp DESC LIMIT 1",
+                (date_str,)
+            )
+            row = cursor.fetchone()
+            return row[0] if row else ""
 
     def get_stats(self):
         with self.get_connection() as conn:
             cursor = conn.cursor()
-
             cursor.execute("SELECT COUNT(*) FROM emotion_logs")
             total = cursor.fetchone()[0]
-
             cursor.execute("SELECT emotion FROM emotion_logs ORDER BY timestamp DESC LIMIT 1")
             row = cursor.fetchone()
             last_emotion = row[0] if row else "N/A"
-
             return {"total": total, "last_emotion": last_emotion}
 
     def get_emotions_for_month(self, year, month):
@@ -54,7 +75,6 @@ class DatabaseManager:
                 WHERE strftime('%Y', timestamp) = ? AND strftime('%m', timestamp) = ?
                 ORDER BY timestamp
             """, (str(year), f"{month:02d}"))
-
             rows = cursor.fetchall()
 
         days = {}
@@ -90,7 +110,6 @@ class DatabaseManager:
             daily[day_str].append(emotion)
 
         sorted_days = sorted(daily.keys(), reverse=True)
-
         first_day_emotions = Counter(daily[sorted_days[0]])
         current_emotion = first_day_emotions.most_common(1)[0][0]
 
@@ -105,7 +124,6 @@ class DatabaseManager:
         return {"emotion": current_emotion, "count": streak_count}
 
     def get_weekly_summary(self):
-
         today = datetime.now().date()
         week_start = today - timedelta(days=today.weekday())
         last_week_start = week_start - timedelta(days=7)
@@ -144,13 +162,14 @@ class DatabaseManager:
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "SELECT id, timestamp, emotion, confidence FROM emotion_logs ORDER BY timestamp"
+                "SELECT id, timestamp, emotion, confidence, notes FROM emotion_logs ORDER BY timestamp"
             )
             rows = cursor.fetchall()
 
         with open(filepath, "w", newline="", encoding="utf-8-sig") as f:
-            writer = csv.writer(f)
-            writer.writerow(["ID", "Timestamp", "Emotion", "Confidence"])
+            f.write("sep=,\n")
+            writer = csv.writer(f, delimiter=",", quoting=csv.QUOTE_MINIMAL)
+            writer.writerow(["ID", "Timestamp", "Emotion", "Confidence", "Notes"])
             writer.writerows(rows)
 
     def clear_all(self):
