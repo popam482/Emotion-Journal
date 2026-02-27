@@ -139,6 +139,20 @@ class DatabaseManager:
             )
             return cursor.fetchone()[0] > 0
 
+    def export_to_csv(self, filepath):
+        import csv
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT id, timestamp, emotion, confidence FROM emotion_logs ORDER BY timestamp"
+            )
+            rows = cursor.fetchall()
+
+        with open(filepath, "w", newline="", encoding="utf-8-sig") as f:
+            writer = csv.writer(f)
+            writer.writerow(["ID", "Timestamp", "Emotion", "Confidence"])
+            writer.writerows(rows)
+
     def clear_all(self):
         with self.get_connection() as conn:
             conn.execute("DELETE FROM emotion_logs")

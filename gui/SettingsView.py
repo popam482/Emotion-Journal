@@ -1,6 +1,7 @@
 import customtkinter as ctk
 
 from gui.SettingsManager import SettingsManager
+from tkinter import filedialog, messagebox
 
 
 class SettingsView(ctk.CTkFrame):
@@ -119,7 +120,22 @@ class SettingsView(ctk.CTkFrame):
         self.settings_manager.set("theme_mode", new_mode)
 
     def export_data(self):
-        print("Export data - to be implemented")
+
+        filepath = filedialog.asksaveasfilename(
+            defaultextension=".csv",
+            filetypes=[("CSV files", "*.csv")],
+            initialfile="emotion_journal_export.csv",
+            title="Export Emotion Data"
+        )
+
+        if not filepath:
+            return
+
+        try:
+            self.db.export_to_csv(filepath)
+            messagebox.showinfo("Export Successful", f"Your data was exported to:\n{filepath}")
+        except Exception as e:
+            messagebox.showerror("Export Failed", f"Something went wrong:\n{e}")
 
     def confirm_clear(self):
         dialog = ctk.CTkToplevel(self)
