@@ -62,7 +62,7 @@ class StatsView(ctk.CTkFrame):
         ax.set_ylim(-0.5, 6.5)
         ax.set_yticks(list(MOOD_SCORE.values()))
         ax.set_yticklabels(
-            ["😠 Angry", "😢 Sad", "😣 Disgust", "😨 Fear", "😐 Neutral", "😲 Surprise", "😊 Happy"],
+            ["😊 Happy", "😲 Surprise", "😐 Neutral", "😨 Fear", "😣 Disgust", "😢 Sad", "😠 Angry"],
             fontsize=12, color=text_color
         )
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %d"))
