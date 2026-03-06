@@ -1,7 +1,10 @@
+from datetime import datetime
+
 import customtkinter as ctk
 import random
 import json
 import os
+
 
 class AlertsView(ctk.CTkFrame):
 
@@ -28,7 +31,7 @@ class AlertsView(ctk.CTkFrame):
                      font=("Arial", 28, "bold")).pack(pady=(30, 20))
 
         alerts_container = ctk.CTkScrollableFrame(self, fg_color="transparent",
-                                                   corner_radius=10)
+                                                  corner_radius=10)
         alerts_container.pack(expand=True, fill="both", padx=30, pady=(0, 20))
 
         alerts = self.generate_alerts()
@@ -48,6 +51,8 @@ class AlertsView(ctk.CTkFrame):
         stats = self.db.get_stats()
         streak = self.db.get_streak()
         weekly = self.db.get_weekly_summary()
+        today_str = datetime.today().strftime("%Y-%m-%d")
+        journal_entry = self.db.get_note_for_date(today_str)
 
         dominant_emotion = self.db.get_dominant_emotion_for_today().lower()
         if dominant_emotion in self.emotion_tips:
@@ -65,6 +70,23 @@ class AlertsView(ctk.CTkFrame):
                 "color": tip_color
             })
 
+        if journal_entry:
+            alerts.append({
+                "type": "insight",
+                "icon": "✍️",
+                "title": "Reflection Benefit",
+                "message": "Nice job taking a moment to check in with yourself today. You tend to feel happier on days when you write things down, and keeping this habit going can really support your well-being.",
+                "color": "#ca03fc"
+            })
+        else:
+            alerts.append({
+                "type": "insight",
+                "icon": "✍️",
+                "title": "Reflection Benefit",
+                "message":  "You tend to feel happier on days when you journal. Want to take a minute to write how you're feeling today? Even a few words can help.",
+                "color": "#ca03fc"
+            })
+
         if streak["count"] >= 3:
             emoji = self.emotion_emojis.get(streak["emotion"], "🤔")
             alerts.append({
@@ -73,6 +95,15 @@ class AlertsView(ctk.CTkFrame):
                 "title": f"{streak['count']}-Day {streak['emotion'].capitalize()} Streak",
                 "message": f"You've been feeling {streak['emotion']} for {streak['count']} consecutive days.",
                 "color": "#F44336" if streak["emotion"] in ["sad", "angry", "fear"] else "#FF9800"
+            })
+        else:
+            emoji = self.emotion_emojis.get(streak["emotion"], "🤔")
+            alerts.append({
+                "type": "insights",
+                "icon": emoji,
+                "title": "Build a 3-day journaling streak",
+                "message": "Try journaling 3 days in a row to unlock new insights and you will get personalised insights based on your emotions.",
+                "color":  "#ff5c5c"
             })
 
         if weekly.get("change") is not None:
@@ -133,4 +164,4 @@ class AlertsView(ctk.CTkFrame):
 
         ctk.CTkLabel(content, text=alert["message"],
                      font=("Arial", 13), text_color=self.theme["text_dim"],
-                     wraplength=500, justify="left").pack(anchor="w", pady=(5, 0))
+                     wraplength=1000, justify="left").pack(anchor="w", pady=(5, 0))
