@@ -172,6 +172,25 @@ class DatabaseManager:
             writer.writerow(["ID", "Timestamp", "Emotion", "Confidence", "Notes"])
             writer.writerows(rows)
 
+    def get_dominant_emotion_for_today(self):
+        today = datetime.now().strftime("%Y-%m-%d")
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT emotion FROM emotion_logs
+                WHERE DATE(timestamp) = ?
+            """, (today,))
+
+            rows = cursor.fetchall()
+
+        if not rows:
+            return None
+
+        emotions = [row[0] for row in rows]
+
+        counts = Counter(emotions)
+        return counts.most_common(1)[0][0]
+
     def clear_all(self):
         with self.get_connection() as conn:
             conn.execute("DELETE FROM emotion_logs")

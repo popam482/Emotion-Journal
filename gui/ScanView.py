@@ -17,7 +17,7 @@ class ScanView(ctk.CTkFrame):
         self.is_scanning = False
         self.scan_start_time = 0
         self.captured_emotions = []
-        self.last_log_id = None  # ✅ track the saved row ID
+        self.last_log_id = None  #
         self.emotion_emojis = {
             "happy": "😊", "sad": "😢", "angry": "😠",
             "surprise": "😲", "fear": "😨", "disgust": "🤢",
@@ -81,10 +81,9 @@ class ScanView(ctk.CTkFrame):
             self.progress_bar.set(progress)
             self.status_label.configure(text=f"Scanning... {remaining}s left")
 
-            if int(elapsed) > len(self.captured_emotions):
-                res = self.analyzer.analyze_emotion(frame)
-                if res:
-                    self.captured_emotions.append(res)
+            emotion = self.analyzer.current_emotion
+            if emotion and int(elapsed) > len(self.captured_emotions):
+                self.captured_emotions.append(emotion)
 
             img = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
             ctk_img = ctk.CTkImage(img, size=(640, 480))
@@ -110,10 +109,22 @@ class ScanView(ctk.CTkFrame):
             emoji = self.emotion_emojis.get(dominant, "🤔")
 
             ctk.CTkLabel(self, text=emoji, font=("Arial", 72)).pack(pady=(30, 5))
-            ctk.CTkLabel(self, text=f"You seem {dominant.capitalize()}!",
+            if dominant=="fear":
+                ctk.CTkLabel(self, text=f"You seem {"scared"}!",
                          font=("Arial", 28, "bold"),
                          text_color=self.theme["accent"]).pack(pady=(0, 10))
-
+            elif dominant=="surprise":
+                ctk.CTkLabel(self, text=f"You seem {"surprised"}!",
+                             font=("Arial", 28, "bold"),
+                             text_color=self.theme["accent"]).pack(pady=(0, 10))
+            elif dominant=="disgust":
+                ctk.CTkLabel(self, text=f"You seem {"disgused"}!",
+                             font=("Arial", 28, "bold"),
+                             text_color=self.theme["accent"]).pack(pady=(0, 10))
+            else:
+                ctk.CTkLabel(self, text=f"You seem {dominant.capitalize()}!",
+                             font=("Arial", 28, "bold"),
+                             text_color=self.theme["accent"]).pack(pady=(0, 10))
             breakdown_frame = ctk.CTkFrame(self, fg_color=self.theme["bg_card"], corner_radius=12)
             breakdown_frame.pack(pady=(0, 15), padx=60, fill="x")
 
@@ -150,7 +161,6 @@ class ScanView(ctk.CTkFrame):
             ctk.CTkLabel(self, text="Make sure your face is visible and well-lit.",
                          font=("Arial", 14), text_color=self.theme["text_dim"]).pack(pady=5)
 
-        # ✅ buttons now save the note before navigating
         buttons_frame = ctk.CTkFrame(self, fg_color="transparent")
         buttons_frame.pack(pady=10)
 

@@ -49,14 +49,14 @@ class AlertsView(ctk.CTkFrame):
         streak = self.db.get_streak()
         weekly = self.db.get_weekly_summary()
 
-        last_emotion = stats.get("last_emotion", "").lower()
-        if last_emotion in self.emotion_tips:
-            tip = random.choice(self.emotion_tips[last_emotion])
+        dominant_emotion = self.db.get_dominant_emotion_for_today().lower()
+        if dominant_emotion in self.emotion_tips:
+            tip = random.choice(self.emotion_tips[dominant_emotion])
             tip_color = {
                 "happy": "#4CAF50", "sad": "#2196F3", "angry": "#F44336",
                 "surprise": "#FF9800", "fear": "#9C27B0",
                 "disgust": "#795548", "neutral": "#607D8B"
-            }.get(last_emotion, "#6c82f0")
+            }.get(dominant_emotion, "#6c82f0")
             alerts.append({
                 "type": "tip",
                 "icon": tip["icon"],
