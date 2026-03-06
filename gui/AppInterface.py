@@ -7,6 +7,7 @@ from gui.CalendarView import CalendarView
 from gui.AlertsView import AlertsView
 from gui.SettingsManager import SettingsManager
 from gui.SettingsView import SettingsView
+from gui.StatsView import StatsView
 
 
 class AppInterface(ctk.CTk):
@@ -55,8 +56,10 @@ class AppInterface(ctk.CTk):
 
         ctk.CTkButton(self.activity_bar, text="📅", command=lambda: self.navigate("calendar"), **btn_style).pack(pady=15,
                                                                                                                 padx=10)
-        ctk.CTkButton(self.activity_bar, text="🔔", command=lambda: self.navigate("alerts"), **btn_style).pack(pady=15,
-                                                                                                              padx=10)
+        ctk.CTkButton(self.activity_bar, text="🔔", command=lambda: self.navigate("alerts"), **btn_style).pack(pady=15, padx=10)
+
+        ctk.CTkButton(self.activity_bar, text="📊", command=lambda: self.navigate("stats"), **btn_style).pack(pady=15, padx=10)
+
         ctk.CTkButton(self.activity_bar, text="⚙️", command=lambda: self.navigate("settings"), **btn_style).pack(
             side="bottom", pady=20, padx=10)
 
@@ -80,6 +83,8 @@ class AppInterface(ctk.CTk):
             self.current_view = CalendarView(self.content_area, self.db, self.navigate, self.theme)
         elif page == "alerts":
             self.current_view = AlertsView(self.content_area, self.db, self.navigate, self.theme)
+        elif page=="stats":
+            self.current_view = StatsView(self.content_area, self.db, self.navigate, self.theme)
         elif page == "settings":
             self.current_view = SettingsView(self.content_area, self.db, self.navigate, self.scan_duration, self.theme)
 

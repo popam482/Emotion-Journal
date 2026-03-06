@@ -191,6 +191,38 @@ class DatabaseManager:
         counts = Counter(emotions)
         return counts.most_common(1)[0][0]
 
+    def get_mood_graph_data(self, days=30):
+        MOOD_SCORE = {
+            "happy": 6, "surprise": 5, "neutral": 4,
+            "fear": 3, "disgust": 2, "sad": 1, "angry": 0
+        }
+        since = (datetime.now().date() - timedelta(days=days)).isoformat()
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT DATE(timestamp) as day, emotion
+                FROM emotion_logs
+                WHERE DATE(timestamp) >= ?
+                ORDER BY timestamp
+            """, (since,))
+            rows = cursor.fetchall()
+
+        daily = {}
+        for day_str, emotion in rows:
+            if day_str not in daily:
+                daily[day_str] = []
+            daily[day_str].append(emotion)
+
+        result = []
+        for day_str in sorted(daily.keys()):
+            counts = Counter(daily[day_str])
+            dominant = counts.most_common(1)[0][0]
+            score = MOOD_SCORE.get(dominant, 3)
+            result.append((day_str, dominant, score))
+
+        return result
+
+
     def clear_all(self):
         with self.get_connection() as conn:
             conn.execute("DELETE FROM emotion_logs")
