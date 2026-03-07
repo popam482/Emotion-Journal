@@ -1,6 +1,6 @@
 import sqlite3
 from datetime import datetime, timedelta
-from collections import Counter
+from collections import Counter, defaultdict
 
 
 class DatabaseManager:
@@ -146,6 +146,55 @@ class DatabaseManager:
         if current_happy is not None and last_happy is not None:
             return {"change": current_happy - last_happy}
         return {"change": None}
+
+    def get_best_and_worst_day(self):
+        today = datetime.now().date()
+        week_start = today - timedelta(days=today.weekday())
+
+        emotion_score = {
+            "happy": 5,
+            "surprise": 4,
+            "neutral": 3,
+            "sad": 2,
+            "fear": 2,
+            "angry": 1,
+            "disgust": 1
+        }
+
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                        SELECT DATE(timestamp), emotion
+                        FROM emotion_logs
+                        WHERE DATE(timestamp) >= ?
+                    """, (str(week_start),))
+            rows = cursor.fetchall()
+
+        if not rows:
+            return None
+
+        days = defaultdict(list)
+
+        for day, emotion in rows:
+            if emotion in emotion_score:
+                days[day].append(emotion_score[emotion])
+
+        if not days:
+            return None
+
+        day_scores = {
+            day: sum(scores) / len(scores)
+            for day, scores in days.items()
+        }
+
+        best_day = max(day_scores, key=day_scores.get)
+        worst_day = min(day_scores, key=day_scores.get)
+
+        return {
+            "best_day": best_day,
+            "worst_day": worst_day
+        }
+
 
     def has_checkin_today(self):
         today = datetime.now().strftime("%Y-%m-%d")

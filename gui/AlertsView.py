@@ -54,7 +54,9 @@ class AlertsView(ctk.CTkFrame):
         today_str = datetime.today().strftime("%Y-%m-%d")
         journal_entry = self.db.get_note_for_date(today_str)
 
-        dominant_emotion = self.db.get_dominant_emotion_for_today().lower()
+        dominant_emotion = self.db.get_dominant_emotion_for_today()
+        if dominant_emotion:
+            dominant_emotion = dominant_emotion.lower()
         if dominant_emotion in self.emotion_tips:
             tip = random.choice(self.emotion_tips[dominant_emotion])
             tip_color = {
@@ -104,6 +106,25 @@ class AlertsView(ctk.CTkFrame):
                 "title": "Build a 3-day journaling streak",
                 "message": "Try journaling 3 days in a row to unlock new insights and you will get personalised insights based on your emotions.",
                 "color":  "#ff5c5c"
+            })
+
+        weekly_days=self.db.get_best_and_worst_day()
+
+        if weekly_days:
+            alerts.append({
+                "type": "insight",
+                "icon": "🌟",
+                "title": "Best day this week",
+                "message": f"Your best emotional day this week was {weekly_days['best_day']}",
+                "color": "#f5e10a"
+            })
+
+            alerts.append({
+                "type": "insight",
+                "icon": "⚠️",
+                "title": "Toughest Day This Week",
+                "message": f"You struggled the most emotionally on {weekly_days['worst_day']}.",
+                "color": "#FF9800"
             })
 
         if weekly.get("change") is not None:
