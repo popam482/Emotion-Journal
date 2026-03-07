@@ -5,13 +5,13 @@ from tkinter import filedialog, messagebox
 
 
 class SettingsView(ctk.CTkFrame):
-    def __init__(self, parent, db, on_navigate, scan_duration, theme):
+    def __init__(self, parent, db, on_navigate, scan_duration, theme, settings_manager):
         super().__init__(parent, fg_color=theme["bg_main"])
         self.db = db
         self.on_navigate = on_navigate
         self.scan_duration = scan_duration
         self.theme = theme
-        self.settings_manager=SettingsManager()
+        self.settings_manager=settings_manager
         self.build_ui()
 
     def build_ui(self):

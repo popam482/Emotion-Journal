@@ -19,6 +19,7 @@ periods = {
     "night": []
 }
 
+
 class DatabaseManager:
     def __init__(self, db_path="data/journal.db"):
         self.db_path = db_path
@@ -242,11 +243,11 @@ class DatabaseManager:
             hour = int(hour)
             score = emotion_score[emotion]
 
-            if 5<=hour<=11:
+            if 5 <= hour <= 11:
                 periods["morning"].append(score)
-            elif 12<=hour<=17:
+            elif 12 <= hour <= 17:
                 periods["afternoon"].append(score)
-            elif 18<=hour<=21:
+            elif 18 <= hour <= 21:
                 periods["evening"].append(score)
             else:
                 periods["night"].append(score)
@@ -259,10 +260,10 @@ class DatabaseManager:
 
         if not averages:
             return None
-        best_period = max(averages, key = averages.get)
-        worst_period = min(averages, key = averages.get)
+        best_period = max(averages, key=averages.get)
+        worst_period = min(averages, key=averages.get)
 
-        return{
+        return {
             "best": best_period,
             "worst": worst_period
         }
@@ -312,10 +313,6 @@ class DatabaseManager:
         return counts.most_common(1)[0][0]
 
     def get_mood_graph_data(self, days=30):
-        MOOD_SCORE = {
-            "happy": 6, "surprise": 5, "neutral": 4,
-            "fear": 3, "disgust": 2, "sad": 1, "angry": 0
-        }
         since = (datetime.now().date() - timedelta(days=days)).isoformat()
         with self.get_connection() as conn:
             cursor = conn.cursor()
@@ -337,11 +334,10 @@ class DatabaseManager:
         for day_str in sorted(daily.keys()):
             counts = Counter(daily[day_str])
             dominant = counts.most_common(1)[0][0]
-            score = MOOD_SCORE.get(dominant, 3)
+            score = emotion_score.get(dominant, 3)
             result.append((day_str, dominant, score))
 
         return result
-
 
     def clear_all(self):
         with self.get_connection() as conn:

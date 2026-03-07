@@ -1,4 +1,6 @@
 from collections import Counter
+from .constants import emotion_emojis, emotion_colors
+
 import customtkinter as ctk
 import cv2
 from PIL import Image
@@ -18,11 +20,6 @@ class ScanView(ctk.CTkFrame):
         self.scan_start_time = 0
         self.captured_emotions = []
         self.last_log_id = None  #
-        self.emotion_emojis = {
-            "happy": "😊", "sad": "😢", "angry": "😠",
-            "surprise": "😲", "fear": "😨", "disgust": "🤢",
-            "neutral": "😐"
-        }
 
         self.build_start_screen()
 
@@ -106,7 +103,7 @@ class ScanView(ctk.CTkFrame):
             dominant = counts.most_common(1)[0][0]
             self.last_log_id = self.db.save_emotion(dominant)
 
-            emoji = self.emotion_emojis.get(dominant, "🤔")
+            emoji = emotion_emojis.get(dominant, "🤔")
 
             ctk.CTkLabel(self, text=emoji, font=("Arial", 72)).pack(pady=(30, 5))
             if dominant=="fear":
@@ -134,7 +131,7 @@ class ScanView(ctk.CTkFrame):
             total = len(self.captured_emotions)
             for emotion, count in counts.most_common():
                 percentage = int((count / total) * 100)
-                em = self.emotion_emojis.get(emotion, "")
+                em = emotion_emojis.get(emotion, "")
                 ctk.CTkLabel(breakdown_frame,
                              text=f"{em} {emotion.capitalize()}: {percentage}% ({count}/{total})",
                              font=("Arial", 13), text_color=self.theme["text_dim"]

@@ -86,7 +86,7 @@ class AppInterface(ctk.CTk):
         elif page=="stats":
             self.current_view = StatsView(self.content_area, self.db, self.navigate, self.theme)
         elif page == "settings":
-            self.current_view = SettingsView(self.content_area, self.db, self.navigate, self.scan_duration, self.theme)
+            self.current_view = SettingsView(self.content_area, self.db, self.navigate, self.scan_duration, self.theme, self.settings_manager)
 
         self.current_view.pack(expand=True, fill="both")
 

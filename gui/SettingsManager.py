@@ -16,7 +16,7 @@ class SettingsManager:
                 with open(self.file_path, "r") as f:
                     return {**self.defaults, **json.load(f)}
             except:
-                return self.defaults
+                return ValueError
         return self.defaults
 
     def save_settings(self):

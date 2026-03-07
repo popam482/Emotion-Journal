@@ -1,5 +1,5 @@
 from datetime import datetime
-
+from .constants import emotion_emojis, emotion_colors
 import customtkinter as ctk
 import random
 import json
@@ -13,12 +13,6 @@ class AlertsView(ctk.CTkFrame):
         self.db = db
         self.on_navigate = on_navigate
         self.theme = theme
-
-        self.emotion_emojis = {
-            "happy": "😊", "sad": "😢", "angry": "😠",
-            "surprise": "😲", "fear": "😨", "disgust": "🤢",
-            "neutral": "😐"
-        }
 
         tips_path = os.path.join("data", "emotion_tips.json")
         with open(tips_path, "r", encoding="utf-8") as f:
@@ -48,29 +42,41 @@ class AlertsView(ctk.CTkFrame):
 
     def generate_alerts(self):
         alerts = []
-        stats = self.db.get_stats()
-        streak = self.db.get_streak()
-        weekly = self.db.get_weekly_summary()
-        today_str = datetime.today().strftime("%Y-%m-%d")
-        journal_entry = self.db.get_note_for_date(today_str)
+        alerts += self._build_emotion_tip()
+        alerts += self._build_journal_insight()
+        alerts += self._build_streak_alert()
+        alerts += self._build_weekly_insights()
+        alerts += self._build_time_pattern()
+        alerts += self._build_reminders()
+        return alerts
 
+    # --- metode private ---
+
+    def _build_emotion_tip(self):
+        alerts = []
         dominant_emotion = self.db.get_dominant_emotion_for_today()
         if dominant_emotion:
             dominant_emotion = dominant_emotion.lower()
-        if dominant_emotion in self.emotion_tips:
-            tip = random.choice(self.emotion_tips[dominant_emotion])
-            tip_color = {
-                "happy": "#4CAF50", "sad": "#2196F3", "angry": "#F44336",
-                "surprise": "#FF9800", "fear": "#9C27B0",
-                "disgust": "#795548", "neutral": "#607D8B"
-            }.get(dominant_emotion, "#6c82f0")
-            alerts.append({
-                "type": "tip",
-                "icon": tip["icon"],
-                "title": tip["title"],
-                "message": tip["message"],
-                "color": tip_color
-            })
+            if dominant_emotion in self.emotion_tips:
+                tip = random.choice(self.emotion_tips[dominant_emotion])
+                tip_color = {
+                    "happy": "#4CAF50", "sad": "#2196F3", "angry": "#F44336",
+                    "surprise": "#FF9800", "fear": "#9C27B0",
+                    "disgust": "#795548", "neutral": "#607D8B"
+                }.get(dominant_emotion, "#6c82f0")
+                alerts.append({
+                    "type": "tip",
+                    "icon": tip["icon"],
+                    "title": tip["title"],
+                    "message": tip["message"],
+                    "color": tip_color
+                })
+        return alerts
+
+    def _build_journal_insight(self):
+        alerts = []
+        today_str = datetime.today().strftime("%Y-%m-%d")
+        journal_entry = self.db.get_note_for_date(today_str)
 
         if journal_entry:
             alerts.append({
@@ -85,12 +91,17 @@ class AlertsView(ctk.CTkFrame):
                 "type": "insight",
                 "icon": "✍️",
                 "title": "Reflection Benefit",
-                "message":  "You tend to feel happier on days when you journal. Want to take a minute to write how you're feeling today? Even a few words can help.",
+                "message": "You tend to feel happier on days when you journal. Want to take a minute to write how you're feeling today? Even a few words can help.",
                 "color": "#ca03fc"
             })
+        return alerts
+
+    def _build_streak_alert(self):
+        alerts = []
+        streak = self.db.get_streak()
+        emoji = emotion_emojis.get(streak["emotion"], "🤔")
 
         if streak["count"] >= 3:
-            emoji = self.emotion_emojis.get(streak["emotion"], "🤔")
             alerts.append({
                 "type": "warning" if streak["emotion"] in ["sad", "angry", "fear"] else "info",
                 "icon": emoji,
@@ -99,16 +110,20 @@ class AlertsView(ctk.CTkFrame):
                 "color": "#F44336" if streak["emotion"] in ["sad", "angry", "fear"] else "#FF9800"
             })
         else:
-            emoji = self.emotion_emojis.get(streak["emotion"], "🤔")
             alerts.append({
                 "type": "insights",
                 "icon": emoji,
                 "title": "Build a 3-day journaling streak",
                 "message": "Try journaling 3 days in a row to unlock new insights and you will get personalised insights based on your emotions.",
-                "color":  "#ff5c5c"
+                "color": "#ff5c5c"
             })
+        return alerts
 
-        weekly_days=self.db.get_best_and_worst_day()
+    def _build_weekly_insights(self):
+        alerts = []
+        weekly = self.db.get_weekly_summary()
+        weekly_days = self.db.get_best_and_worst_day()
+        mood_variability = self.db.get_mood_variability()
 
         if weekly_days:
             alerts.append({
@@ -118,7 +133,6 @@ class AlertsView(ctk.CTkFrame):
                 "message": f"Your best emotional day this week was {weekly_days['best_day']}",
                 "color": "#f5e10a"
             })
-
             alerts.append({
                 "type": "insight",
                 "icon": "⚠️",
@@ -126,8 +140,6 @@ class AlertsView(ctk.CTkFrame):
                 "message": f"You struggled the most emotionally on {weekly_days['worst_day']}.",
                 "color": "#FF9800"
             })
-
-        mood_variability = self.db.get_mood_variability()
 
         if mood_variability == "stable":
             alerts.append({
@@ -144,35 +156,6 @@ class AlertsView(ctk.CTkFrame):
                 "title": "Mood variability",
                 "message": "Your emotions fluctuated this week.",
                 "color": "#ffad1f"
-            })
-
-        pattern = self.db.get_time_of_the_day_mood()
-
-        if pattern:
-            best = pattern["best"]
-            worst = pattern ["worst"]
-
-            text = {
-                "morning": "in the morning",
-                "afternoon": "in the afternoon",
-                "evening": "in the evening",
-                "night": "in the night"
-            }
-
-            alerts.append({
-                "type": "insight",
-                "icon": "⏰",
-                "title": "Mood pattern detected",
-                "message": f"You tend to feel better {text[best]}.",
-                "color": "#1fff3d"
-            })
-
-            alerts.append({
-                "type": "insight",
-                "icon": "⏰",
-                "title": "Mood pattern detected",
-                "message": f"You tend to feel worse {text[worst]}.",
-                "color": "#ff1f1f"
             })
 
         if weekly.get("change") is not None:
@@ -192,6 +175,40 @@ class AlertsView(ctk.CTkFrame):
                     "message": f"Your happiness decreased by {abs(weekly['change'])}% compared to last week.",
                     "color": "#FF9800"
                 })
+
+        return alerts
+
+    def _build_time_pattern(self):
+        alerts = []
+        pattern = self.db.get_time_of_the_day_mood()
+        if pattern:
+            best = pattern["best"]
+            worst = pattern["worst"]
+            text = {
+                "morning": "in the morning",
+                "afternoon": "in the afternoon",
+                "evening": "in the evening",
+                "night": "in the night"
+            }
+            alerts.append({
+                "type": "insight",
+                "icon": "⏰",
+                "title": "Mood pattern detected",
+                "message": f"You tend to feel better {text[best]}.",
+                "color": "#1fff3d"
+            })
+            alerts.append({
+                "type": "insight",
+                "icon": "⏰",
+                "title": "Mood pattern detected",
+                "message": f"You tend to feel worse {text[worst]}.",
+                "color": "#ff1f1f"
+            })
+        return alerts
+
+    def _build_reminders(self):
+        alerts = []
+        stats = self.db.get_stats()
 
         if not self.db.has_checkin_today():
             alerts.append({

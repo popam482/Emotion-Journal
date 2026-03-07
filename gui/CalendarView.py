@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+from .constants import emotion_emojis, emotion_colors
 import calendar
 import customtkinter as ctk
 
@@ -13,17 +14,6 @@ class CalendarView(ctk.CTkFrame):
         now = datetime.now()
         self.current_year = now.year
         self.current_month = now.month
-
-        self.emotion_colors = {
-            "happy": "#4CAF50", "sad": "#2196F3", "angry": "#F44336",
-            "surprise": "#FF9800", "fear": "#9C27B0", "disgust": "#795548",
-            "neutral": "#607D8B"
-        }
-        self.emotion_emojis = {
-            "happy": "😊", "sad": "😢", "angry": "😠",
-            "surprise": "😲", "fear": "😨", "disgust": "🤢",
-            "neutral": "😐"
-        }
 
         self.build_ui()
 
@@ -50,8 +40,8 @@ class CalendarView(ctk.CTkFrame):
         legend_frame = ctk.CTkFrame(self, fg_color=self.theme["bg_card"], corner_radius=10)
         legend_frame.pack(fill="x", padx=30, pady=10)
 
-        for emotion, emoji in self.emotion_emojis.items():
-            color = self.emotion_colors[emotion]
+        for emotion, emoji in emotion_emojis.items():
+            color = emotion_colors[emotion]
             item = ctk.CTkFrame(legend_frame, fg_color="transparent")
             item.pack(side="left", padx=8, pady=8)
             ctk.CTkLabel(item, text=f"{emoji} {emotion.capitalize()}",
@@ -98,8 +88,8 @@ class CalendarView(ctk.CTkFrame):
                             and self.current_year == today.year)
 
                 if emotion:
-                    bg_color = self.emotion_colors.get(emotion, "#333333")
-                    emoji = self.emotion_emojis.get(emotion, "")
+                    bg_color = emotion_colors.get(emotion, "#333333")
+                    emoji = emotion_emojis.get(emotion, "")
                     display_text = f"{emoji}\n{day}"
                     text_color = "white"
                 elif is_today:
@@ -138,8 +128,8 @@ class CalendarView(ctk.CTkFrame):
         header_frame.pack(fill="x", padx=20, pady=(20, 10))
 
         if emotion:
-            emoji = self.emotion_emojis.get(emotion, "")
-            color = self.emotion_colors.get(emotion, self.theme["accent"])
+            emoji = emotion_emojis.get(emotion, "")
+            color = emotion_colors.get(emotion, self.theme["accent"])
             ctk.CTkLabel(header_frame, text=f"{emoji}  {emotion.capitalize()}",
                          font=("Arial", 22, "bold"), text_color=color).pack(pady=15)
         else:
