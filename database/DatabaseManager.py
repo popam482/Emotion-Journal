@@ -15,7 +15,8 @@ emotion_score = {
 periods = {
     "morning": [],
     "afternoon": [],
-    "evening": []
+    "evening": [],
+    "night": []
 }
 
 class DatabaseManager:
@@ -223,9 +224,48 @@ class DatabaseManager:
         else:
             return "variable"
 
-   
+    def get_time_of_the_day_mood(self):
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT strftime('%H', timestamp), emotion
+                FROM emotion_logs
+            """)
+            rows = cursor.fetchall()
 
+        if not rows:
+            return None
 
+        for hour, emotion in rows:
+            if emotion not in emotion_score:
+                continue
+            hour = int(hour)
+            score = emotion_score[emotion]
+
+            if 5<=hour<=11:
+                periods["morning"].append(score)
+            elif 12<=hour<=17:
+                periods["afternoon"].append(score)
+            elif 18<=hour<=21:
+                periods["evening"].append(score)
+            else:
+                periods["night"].append(score)
+
+        averages = {}
+
+        for period, scores in periods.items():
+            if scores:
+                averages[period] = sum(scores) / len(scores)
+
+        if not averages:
+            return None
+        best_period = max(averages, key = averages.get)
+        worst_period = min(averages, key = averages.get)
+
+        return{
+            "best": best_period,
+            "worst": worst_period
+        }
 
     def has_checkin_today(self):
         today = datetime.now().strftime("%Y-%m-%d")

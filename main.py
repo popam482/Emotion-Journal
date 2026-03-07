@@ -1,8 +1,5 @@
 from gui.AppInterface import AppInterface
 
-def main():
+if __name__ == "__main__":
     app = AppInterface()
     app.mainloop()
-
-if __name__ == "__main__":
-    main()

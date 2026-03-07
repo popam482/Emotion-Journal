@@ -146,6 +146,35 @@ class AlertsView(ctk.CTkFrame):
                 "color": "#ffad1f"
             })
 
+        pattern = self.db.get_time_of_the_day_mood()
+
+        if pattern:
+            best = pattern["best"]
+            worst = pattern ["worst"]
+
+            text = {
+                "morning": "in the morning",
+                "afternoon": "in the afternoon",
+                "evening": "in the evening",
+                "night": "in the night"
+            }
+
+            alerts.append({
+                "type": "insight",
+                "icon": "⏰",
+                "title": "Mood pattern detected",
+                "message": f"You tend to feel better {text[best]}.",
+                "color": "#1fff3d"
+            })
+
+            alerts.append({
+                "type": "insight",
+                "icon": "⏰",
+                "title": "Mood pattern detected",
+                "message": f"You tend to feel worse {text[worst]}.",
+                "color": "#ff1f1f"
+            })
+
         if weekly.get("change") is not None:
             if weekly["change"] > 0:
                 alerts.append({
