@@ -2,6 +2,21 @@ import sqlite3
 from datetime import datetime, timedelta
 from collections import Counter, defaultdict
 
+emotion_score = {
+    "happy": 5,
+    "surprise": 4,
+    "neutral": 3,
+    "sad": 2,
+    "fear": 2,
+    "angry": 1,
+    "disgust": 1
+}
+
+periods = {
+    "morning": [],
+    "afternoon": [],
+    "evening": []
+}
 
 class DatabaseManager:
     def __init__(self, db_path="data/journal.db"):
@@ -151,16 +166,6 @@ class DatabaseManager:
         today = datetime.now().date()
         week_start = today - timedelta(days=today.weekday())
 
-        emotion_score = {
-            "happy": 5,
-            "surprise": 4,
-            "neutral": 3,
-            "sad": 2,
-            "fear": 2,
-            "angry": 1,
-            "disgust": 1
-        }
-
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""
@@ -194,6 +199,32 @@ class DatabaseManager:
             "best_day": best_day,
             "worst_day": worst_day
         }
+
+    def get_mood_variability(self):
+        today = datetime.now().date()
+        week_start = today - timedelta(days=today.weekday())
+
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT emotion FROM emotion_logs
+                WHERE DATE(timestamp) >= ?
+            """, (str(week_start),))
+
+            emotions = [row[0] for row in cursor.fetchall()]
+
+        if len(emotions) < 4:
+            return None
+
+        unique = len(set(emotions))
+
+        if unique <= 2:
+            return "stable"
+        else:
+            return "variable"
+
+   
+
 
 
     def has_checkin_today(self):

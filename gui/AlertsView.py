@@ -127,6 +127,25 @@ class AlertsView(ctk.CTkFrame):
                 "color": "#FF9800"
             })
 
+        mood_variability = self.db.get_mood_variability()
+
+        if mood_variability == "stable":
+            alerts.append({
+                "type": "insight",
+                "icon": "🧘",
+                "title": "Stable mood",
+                "message": "Your emotional state has been stable this week.",
+                "color": "#6be3e1"
+            })
+        else:
+            alerts.append({
+                "type": "insight",
+                "icon": "↘️",
+                "title": "Mood variability",
+                "message": "Your emotions fluctuated this week.",
+                "color": "#ffad1f"
+            })
+
         if weekly.get("change") is not None:
             if weekly["change"] > 0:
                 alerts.append({
