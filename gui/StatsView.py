@@ -15,6 +15,15 @@ EMOTION_COLORS = {
     "fear": "#9C27B0", "disgust": "#795548", "sad": "#2196F3", "angry": "#F44336"
 }
 
+SCORE_LABELS = [
+    "😠 Angry",    # 0
+    "😢 Sad",      # 1
+    "🤮 Disgust",  # 2
+    "😨 Fear",     # 3
+    "😐 Neutral",  # 4
+    "😲 Surprise", # 5
+    "😊 Happy",    # 6
+]
 
 class StatsView(ctk.CTkFrame):
     def __init__(self, parent, db, on_navigate, theme):
@@ -60,11 +69,8 @@ class StatsView(ctk.CTkFrame):
         ax.scatter(dates, scores, c=colors, s=60, zorder=3, edgecolors=card_bg, linewidths=1.5)
 
         ax.set_ylim(-0.5, 6.5)
-        ax.set_yticks(list(MOOD_SCORE.values()))
-        ax.set_yticklabels(
-            ["😊 Happy", "😲 Surprise", "😐 Neutral", "😨 Fear", "😣 Disgust", "😢 Sad", "😠 Angry"],
-            fontsize=12, color=text_color
-        )
+        ax.set_yticks([0, 1, 2, 3, 4, 5, 6])
+        ax.set_yticklabels(SCORE_LABELS, fontsize=12, color=text_color)
         ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %d"))
         ax.xaxis.set_major_locator(mdates.AutoDateLocator())
         fig.autofmt_xdate(rotation=30)
@@ -88,8 +94,8 @@ class StatsView(ctk.CTkFrame):
 
         from collections import Counter
         most_common = Counter(emotions).most_common(1)[0][0]
-        avg_score = round(sum(scores) / len(scores), 1)
-        avg_label = ["Angry", "Sad", "Disgust", "Fear", "Neutral", "Surprise", "Happy"][round(avg_score)]
+        avg_score = round(sum(scores) / len(scores))
+        avg_label = SCORE_LABELS[avg_score].split(" ", 1)[1]
 
         for label, value in [
             ("📅  Days tracked", str(len(data))),

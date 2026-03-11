@@ -313,6 +313,10 @@ class DatabaseManager:
         return counts.most_common(1)[0][0]
 
     def get_mood_graph_data(self, days=30):
+        GRAPH_SCORE = {
+            "happy": 6, "surprise": 5, "neutral": 4,
+            "fear": 3, "disgust": 2, "sad": 1, "angry": 0
+        }
         since = (datetime.now().date() - timedelta(days=days)).isoformat()
         with self.get_connection() as conn:
             cursor = conn.cursor()
@@ -334,7 +338,7 @@ class DatabaseManager:
         for day_str in sorted(daily.keys()):
             counts = Counter(daily[day_str])
             dominant = counts.most_common(1)[0][0]
-            score = emotion_score.get(dominant, 3)
+            score = GRAPH_SCORE.get(dominant, 3)
             result.append((day_str, dominant, score))
 
         return result
