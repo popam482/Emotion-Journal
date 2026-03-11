@@ -112,6 +112,25 @@ python main.py
 
 ---
 
+## Screenshots
+
+### Main Menu
+<img width="1916" height="999" alt="image" src="https://github.com/user-attachments/assets/8e734f74-fd7b-47b5-b1a3-5573087105b6" />
+
+### Calendar View
+<img width="1919" height="1000" alt="image" src="https://github.com/user-attachments/assets/79eb5e63-2758-4472-867d-ad72cc95622f" />
+
+### Notifications Panel
+<img width="1919" height="1003" alt="image" src="https://github.com/user-attachments/assets/47221614-abb6-4c0a-9365-2ebbd440edea" />
+
+### Mood Graph
+<img width="1919" height="1004" alt="image" src="https://github.com/user-attachments/assets/bc3ccad1-27a3-4250-94b1-871c6d6eb626" />
+
+### App Settings
+<img width="1919" height="1007" alt="image" src="https://github.com/user-attachments/assets/b48ceab8-cd4e-4a34-8b10-5f3c6798df00" />
+
+
+
 ## What I Learned
 
 This project was my main hands-on introduction to Python. Some of the key things I learned and applied:
