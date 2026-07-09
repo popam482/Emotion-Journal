@@ -8,7 +8,14 @@ A desktop application that uses real-time AI facial recognition to track your em
 
 Emotion Journal is a desktop app I built to learn Python through a real, end-to-end project. Rather than following tutorials, I challenged myself to build something practical from scratch: combining computer vision, a local database, data visualisation, and a modern GUI into a single application.
 
-The app uses your webcam to detect your facial expression, identifies the dominant emotion using Deep Face, and logs it locally. Over time, it builds a personal emotional history you can explore through a calendar, a mood graph, and a smart insights panel.
+The app uses your webcam to detect your facial expression, identifies the dominant emotion using Deep Face, and logs it locally. Over time, it builds a personal emotional history you can explore through a calendar, a mood graph, and a smart insights panel. Talk to an AI assistant about your mood, thoughts, and reflections.
+Use it to:
+
+    -process emotions in the moment
+    -get journaling prompts
+    -reframe negative thoughts
+    -stay consistent with self-reflection
+  
 
 ---
 
@@ -24,6 +31,7 @@ The app uses your webcam to detect your facial expression, identifies the domina
 |  **CSV export** | Export your full emotion history to CSV with a single click, compatible with Excel |
 |  **Dark / Light theme** | Persistent theme preference saved to a local JSON config file |
 |  **Configurable scan duration** | Adjust how long each scan lasts (5–30 seconds) from the settings panel |
+| **AI chatbot** | AI asistent that can help the user to process their feelings |
 
 ---
 
@@ -39,6 +47,7 @@ The app uses your webcam to detect your facial expression, identifies the domina
 | **Matplotlib** | Mood graph embedded directly into the UI |
 | **Threading** | Background emotion analysis to keep the UI non-blocking |
 | **JSON** | Settings persistence and emotion tips configuration |
+|**Ollama** | AI chat bot|
 
 ---
 
@@ -64,6 +73,7 @@ Emotion-Journal/
 │   ├── AlertsView.py           # Personalised notifications and insights, based on the input
 │   ├── SettingsView.py         # Theme, scan duration, data export, data clear
 │   ├── SettingsManager.py      # JSON-backed settings persistence
+|   ├── ChatView.py             # Chat bot used to process emotions
 │   └── constants.py            # Shared emotion emojis and colours
 │
 ├── data/
@@ -85,6 +95,7 @@ Emotion-Journal/
 - OpenCV
 - DeepFace
 - Tkinter
+- Ollama
 
 ### Installation
 
@@ -109,6 +120,7 @@ python main.py
 3. After the scan, the dominant emotion is saved to the local SQLite database
 4. You can optionally write a **journal note** before navigating away
 5. Your emotion history is visible in the **Calendar**, the **Mood Graph**, and the **Alerts** panel
+6. You can chat with the AI chat bot in a private & offline space with no information shared anywhere
 
 ---
 
@@ -141,7 +153,10 @@ This project was my main hands-on introduction to Python. Some of the key things
 - **Matplotlib** : using `FigureCanvasTkAgg` to render charts inside a CustomTkinter frame
 - **Data persistence** — both structured (SQLite) and unstructured (JSON config, JSON tips)
 - **Error handling** — graceful fallbacks for missing files, empty data states, and camera errors
-
+- **AI Integration** -using Ollama as an user asistent
+ 
 ## License
 
 This project is open source and available under the [MIT License](LICENSE).
+
+Made with care for mental wellness
