@@ -60,6 +60,23 @@ class ChatView(ctk.CTkFrame):
             )
         })
 
+        from datetime import timedelta
+        yesterday_str = (datetime.today() - timedelta(days=1)).strftime("%Y-%m-%d")
+
+        yesterday_emotion = self.db.get_dominant_emotion_for_date(yesterday_str)
+        yesterday_note = self.db.get_note_for_date(yesterday_str)
+
+        history_context = ""
+        if yesterday_emotion:
+            history_context = f"For context, YESTERDAY the user felt [{yesterday_emotion}]."
+            if yesterday_note:
+                history_context += f" Their note yesterday was: '{yesterday_note}'."
+
+            self.chat_history.append({
+                "role": "system",
+                "content": f"Context about the user's recent history: {history_context} Use this to show continuity if appropriate."
+            })
+
         # 2. take today's feeling and the note(optionally)
         today_str = datetime.today().strftime("%Y-%m-%d")
         dominant_emotion = self.db.get_dominant_emotion_for_today()
@@ -71,6 +88,8 @@ class ChatView(ctk.CTkFrame):
             if note:
                 context_prompt += f" In the notes I left this: '{note}'."
             context_prompt += " Begin the conversation with a short reply adequate to my feelings."
+        elif yesterday_emotion:
+            context_prompt = "Hello! I haven't done my scan today yet, but let's talk."
 
         self.chat_history.append({"role": "user", "content": context_prompt})
 

@@ -312,6 +312,22 @@ class DatabaseManager:
         counts = Counter(emotions)
         return counts.most_common(1)[0][0]
 
+    def get_dominant_emotion_for_date(self, date_str):
+        with self.get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT emotion FROM emotion_logs 
+                WHERE DATE(timestamp) = ?
+            """, (date_str,))
+            rows = cursor.fetchall()
+
+        if not rows:
+            return None
+
+        emotions = [row[0] for row in rows]
+        counts = Counter(emotions)
+        return counts.most_common(1)[0][0]
+
     def get_mood_graph_data(self, days=30):
         GRAPH_SCORE = {
             "happy": 6, "surprise": 5, "neutral": 4,
